@@ -1,12 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./books.css";
 import BookCard from "../BookCard";
 import AddBook from "../AddBook";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 
 const Books = ({ styles }) => {
+  const dispatch = useDispatch();
+
   const { books } = useSelector((state) => state.book);
   const { title, author } = useSelector((state) => state.filter);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/book");
+        if (!response || response.status !== 200)
+          return dispatch({ type: "SET_BOOKS", payload: [] });
+        return dispatch({ type: "SET_BOOKS", payload: response.data });
+      } catch (err) {
+        console.log(err.message);
+        dispatch({ type: "SET_BOOKS", payload: [] });
+      }
+    };
+    fetchData();
+  }, [dispatch]);
+
   return (
     <div style={{ ...styles }}>
       <div className="add-book-container">
@@ -32,7 +51,7 @@ const Books = ({ styles }) => {
                   title={book.title}
                   author={book.author}
                   rating={book.rating}
-                  voters={book.voters}
+                  voters={book.nbVoters}
                   description={book.description}
                   img={book.img}
                 />

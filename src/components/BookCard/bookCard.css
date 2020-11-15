@@ -9,6 +9,7 @@
 }
 .book-content-content {
   padding: 15px 18px;
+  width: 100%;
 }
 .book-title {
   font-weight: 600;
@@ -23,6 +24,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+  width: 100%;
 }
 .book-voters {
   color: #bbbbbb;

@@ -1,10 +1,25 @@
 import React from "react";
 import { Button, Modal, Input, Rate } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 const AddBook = () => {
   const dispatch = useDispatch();
   const { visible, newBook } = useSelector((state) => state.book);
+
+  const postData = async (newBook) => {
+    try {
+      const response = await axios.post("http://localhost:8080/book/", newBook);
+      if (!response || response.status !== 201)
+        return dispatch({ type: "SET_ERR", payload: "FAILED TO ADD" });
+      console.log(response);
+      dispatch({ type: "ADD_NEW_BOOK", payload: response.data.result });
+    } catch (err) {
+      console.log(err.message);
+      dispatch({ type: "SET_ERR", payload: "FAILED TO ADD" });
+    }
+  };
+
   return (
     <div>
       <Button
@@ -18,24 +33,9 @@ const AddBook = () => {
         visible={visible}
         onCancel={() => dispatch({ type: "UPDATE_VISIBLE", payload: false })}
         onOk={() => {
-          dispatch({
-            type: "ADD_NEW_BOOK",
-            payload: {
-              ...newBook,
-              img: "/assets/book1.jpg",
-              voters: "1,867,756",
-            },
-          });
+          postData(newBook);
           dispatch({ type: "UPDATE_VISIBLE", payload: false });
-          dispatch({
-            type: "UPDATE_NEW_BOOK",
-            payload: {
-              title: "",
-              author: "",
-              description: "",
-              rating: 0,
-            },
-          });
+          //POST REQUEST
         }}
       >
         <Input
